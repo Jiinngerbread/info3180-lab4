@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<h2 class="page-header">Images</h2>
+
+{% include 'flash_messages.html' %}
+
+<div class="image-grid">
+    {% for image in image_list%}
+    <img src="{{ url_for('static',filename='uploads/'+image) }}" class="images rounded">
+    {% endfor%}
+    <p>{{image_view}}</p>
+</div>
+{% endblock %}
