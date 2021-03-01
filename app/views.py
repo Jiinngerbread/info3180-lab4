@@ -10,7 +10,8 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import CombinedMultiDict
 from .forms import UploadForm
-
+from flask.helpers import send_from_directory
+from app.config import Config
 
 ###
 # Routing for your application.
@@ -41,6 +42,7 @@ def upload():
         
         # Get file data and save to your uploads folder
         getphoto = files.photo.data
+        #description = files.description.data
         filename = secure_filename(getphoto.filename)
         getphoto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         flash('File Saved', 'success')
@@ -52,17 +54,26 @@ def upload():
 
 @app.route('/files')
 def files():
-       images = uploaded_images()
-       return render_template('files.html', image_list  = images)
-    
-def uploaded_images():
+    if not session.get('logged_in'):
+        abort(401)
+    images = get_uploaded_images()
+    return render_template('files.html', image_list  = images)
+
+def get_uploaded_images():
     rootdir = os.getcwd()
     image_path = []
-    for subdir, dirs, files in os.walk(rootdir + '/app/static/uploads'):
+    for subdir, dirs, files in os.walk(rootdir + './uploads'):
         for file in files:
             if (file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg')):
-                    image_path.append(file)
+                image_path.append(file)
+                print(file)
     return image_path
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    path = os.getcwd()
+    return send_from_directory(os.path.join(path, app.config['UPLOAD_FOLDER']), filename) 
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

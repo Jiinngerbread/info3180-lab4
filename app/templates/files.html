@@ -5,10 +5,13 @@
 
 {% include 'flash_messages.html' %}
 
-<div class="image-grid">
-    {% for image in image_list%}
-    <img src="{{ url_for('static',filename='uploads/'+image) }}" class="images rounded">
+<div class="image-grid main form-group" >
+    {% for image in image_list %}
+    <div class='picture'>
+        <img src="{{ url_for('get_image', filename= ''+ image) }}" class="images rounded">
+        
+    </div>
     {% endfor%}
-    <p>{{image_view}}</p>
+    
 </div>
 {% endblock %}
